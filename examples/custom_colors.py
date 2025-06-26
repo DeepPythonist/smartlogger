@@ -1,0 +1,1 @@
+# Custom colors configuration example 

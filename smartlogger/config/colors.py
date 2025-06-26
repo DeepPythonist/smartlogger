@@ -1,0 +1,1 @@
+# Color definitions and configurations 
