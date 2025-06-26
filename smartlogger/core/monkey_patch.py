@@ -98,14 +98,18 @@ class LoggingPatcher:
     def _patch_logger_class(self):
         if not hasattr(logging.Logger, '_original_addHandler'):
             logging.Logger._original_addHandler = logging.Logger.addHandler
-            logging.Logger.addHandler = self._enhanced_add_handler
+            
+            def enhanced_add_handler(logger_self, handler):
+                return self._enhanced_add_handler(logger_self, handler)
+            
+            logging.Logger.addHandler = enhanced_add_handler
     
     def _patch_basic_config(self):
         if not hasattr(logging, '_original_basicConfig'):
             logging._original_basicConfig = logging.basicConfig
             logging.basicConfig = self._enhanced_basic_config
     
-    def _enhanced_add_handler(logger_self, handler):
+    def _enhanced_add_handler(self, logger_self, handler):
         if isinstance(handler, logging.StreamHandler) and not isinstance(handler, ColoredStreamHandler):
             if hasattr(handler, 'stream') and hasattr(handler.stream, 'isatty'):
                 try:
