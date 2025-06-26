@@ -1,0 +1,16 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include requirements.txt
+include requirements-dev.txt
+recursive-include docs *.md
+recursive-include examples *.py
+recursive-include tests *.py
+include demo_smartlogger.py
+exclude .gitignore
+exclude *.pyc
+exclude __pycache__
+exclude .pytest_cache
+exclude build
+exclude dist
+exclude *.egg-info 

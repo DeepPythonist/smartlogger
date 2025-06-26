@@ -1,52 +1,49 @@
-#!/usr/bin/env python3
-
 import logging
-import sys
-from smartlogger import (
-    ColoredStreamHandler, 
-    ColoredFormatter,
-    MinimalColoredFormatter,
-    DetailedColoredFormatter
-)
+import smartlogger.auto
 
-print("=== Manual Integration Example ===")
+class DatabaseManager:
+    def __init__(self):
+        self.logger = logging.getLogger(self.__class__.__name__)
+    
+    def connect(self):
+        self.logger.info("Connecting to database...")
+        self.logger.debug("Using connection string: localhost:5432")
+        
+    def query(self, sql):
+        self.logger.debug(f"Executing query: {sql}")
+        self.logger.warning("Query took longer than expected")
+        
+    def disconnect(self):
+        self.logger.info("Database connection closed")
 
-# Create logger
-logger = logging.getLogger('integration_demo')
-logger.setLevel(logging.DEBUG)
+class APIServer:
+    def __init__(self):
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self.db = DatabaseManager()
+    
+    def start(self):
+        self.logger.info("Starting API server...")
+        self.db.connect()
+        
+    def handle_request(self, request_id):
+        self.logger.info(f"Processing request {request_id}")
+        try:
+            self.db.query("SELECT * FROM users")
+            self.logger.info(f"Request {request_id} completed successfully")
+        except Exception as e:
+            self.logger.error(f"Request {request_id} failed: {e}")
+            self.logger.critical("System may be unstable")
 
-# Remove default handlers
-logger.handlers.clear()
+def main():
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    
+    server = APIServer()
+    server.start()
+    server.handle_request("REQ-001")
+    server.handle_request("REQ-002")
 
-# Add colored console handler
-console_handler = ColoredStreamHandler(sys.stdout)
-console_handler.setFormatter(MinimalColoredFormatter())
-logger.addHandler(console_handler)
-
-print("\n1. Minimal formatter:")
-logger.info("Simple info message")
-logger.error("Simple error message")
-
-# Change to detailed formatter
-console_handler.setFormatter(DetailedColoredFormatter())
-
-print("\n2. Detailed formatter:")
-logger.info("Detailed info message")
-logger.error("Detailed error message")
-
-# Add file handler (without colors)
-file_handler = logging.FileHandler('app.log')
-file_handler.setFormatter(logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-))
-logger.addHandler(file_handler)
-
-print("\n3. Dual output (console + file):")
-logger.info("This goes to both console (colored) and file (plain)")
-logger.warning("Warning message in both outputs")
-
-# Clean up
-logger.handlers.clear()
-
-print("\nIntegration example completed!")
-print("Check 'app.log' file for plain text logs.") 
+if __name__ == "__main__":
+    main() 

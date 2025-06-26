@@ -1,0 +1,15 @@
+# Development dependencies for SmartLogger
+-r requirements.txt
+
+# Additional development tools
+pre-commit>=2.20.0
+tox>=4.0.0
+coverage>=7.0.0
+
+# Code quality
+isort>=5.10.0
+bandit>=1.7.0
+
+# Type checking
+types-setuptools
+types-colorama 

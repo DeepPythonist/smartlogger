@@ -1,0 +1,19 @@
+# SmartLogger has ZERO runtime dependencies by design
+# This file contains development and testing dependencies only
+
+# Testing
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# Development tools
+black>=22.0.0
+flake8>=5.0.0
+mypy>=1.0.0
+
+# Documentation
+sphinx>=5.0.0
+sphinx-rtd-theme>=1.0.0
+
+# Build tools
+build>=0.8.0
+twine>=4.0.0 

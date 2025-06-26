@@ -1,173 +1,104 @@
 import os
 import sys
 import platform
-from typing import Optional, Dict, Any
 
-from ..exceptions import TerminalDetectionError
+def is_windows():
+    return platform.system().lower() == 'windows'
 
-
-class TerminalCapabilities:
-    def __init__(self):
-        self._capabilities = self._detect_capabilities()
-    
-    def _detect_capabilities(self) -> Dict[str, Any]:
-        capabilities = {
-            'colors': self._supports_colors(),
-            'ansi': self._supports_ansi(),
-            'interactive': self._is_interactive(),
-            'platform': self._get_platform_info(),
-            'term_program': self._get_term_program(),
-            'color_depth': self._get_color_depth()
-        }
-        return capabilities
-    
-    def _supports_colors(self) -> bool:
-        try:
-            if os.environ.get('NO_COLOR'):
-                return False
-            
-            if os.environ.get('FORCE_COLOR'):
-                return True
-            
-            if not self._is_interactive():
-                return False
-            
-            if platform.system() == 'Windows':
-                return self._windows_supports_ansi()
-            
-            term = os.environ.get('TERM', '').lower()
-            if term in ('dumb', 'unknown', ''):
-                return False
-            
-            return True
-        except Exception:
-            return False
-    
-    def _supports_ansi(self) -> bool:
-        try:
-            if platform.system() == 'Windows':
-                return self._windows_supports_ansi()
-            return True
-        except Exception:
-            return False
-    
-    def _is_interactive(self) -> bool:
-        try:
-            return (
-                hasattr(sys.stdout, 'isatty') and 
-                sys.stdout.isatty() and
-                hasattr(sys.stderr, 'isatty') and 
-                sys.stderr.isatty()
-            )
-        except Exception:
-            return False
-    
-    def _get_platform_info(self) -> Dict[str, str]:
-        return {
-            'system': platform.system(),
-            'release': platform.release(),
-            'version': platform.version(),
-            'machine': platform.machine()
-        }
-    
-    def _get_term_program(self) -> Optional[str]:
-        return os.environ.get('TERM_PROGRAM')
-    
-    def _get_color_depth(self) -> int:
-        colorterm = os.environ.get('COLORTERM', '').lower()
-        if colorterm in ('truecolor', '24bit'):
-            return 24
-        elif colorterm in ('256color', '256'):
-            return 8
-        
-        term = os.environ.get('TERM', '').lower()
-        if '256color' in term or '256' in term:
-            return 8
-        elif 'color' in term:
-            return 4
-        
-        return 1
-    
-    def _windows_supports_ansi(self) -> bool:
-        if platform.system() != 'Windows':
-            return True
-        
-        try:
-            version = platform.version()
-            major, minor, build = map(int, version.split('.'))
-            return (major, minor, build) >= (10, 0, 14393)
-        except Exception:
-            return False
-    
-    def supports_colors(self) -> bool:
-        return self._capabilities.get('colors', False)
-    
-    def supports_ansi(self) -> bool:
-        return self._capabilities.get('ansi', False)
-    
-    def is_interactive(self) -> bool:
-        return self._capabilities.get('interactive', False)
-    
-    def get_color_depth(self) -> int:
-        return self._capabilities.get('color_depth', 1)
-    
-    def get_platform_info(self) -> Dict[str, str]:
-        return self._capabilities.get('platform', {})
-    
-    def get_term_program(self) -> Optional[str]:
-        return self._capabilities.get('term_program')
-
-
-_terminal_capabilities = None
-
-
-def get_terminal_capabilities() -> TerminalCapabilities:
-    global _terminal_capabilities
-    if _terminal_capabilities is None:
-        _terminal_capabilities = TerminalCapabilities()
-    return _terminal_capabilities
-
-
-def supports_colors() -> bool:
+def is_colorama_available():
     try:
-        return get_terminal_capabilities().supports_colors()
-    except Exception:
-        return False
-
-
-def supports_ansi() -> bool:
-    try:
-        return get_terminal_capabilities().supports_ansi()
-    except Exception:
-        return False
-
-
-def is_interactive_terminal() -> bool:
-    try:
-        return get_terminal_capabilities().is_interactive()
-    except Exception:
-        return False
-
-
-def get_color_depth() -> int:
-    try:
-        return get_terminal_capabilities().get_color_depth()
-    except Exception:
-        return 1
-
-
-def stream_supports_color(stream) -> bool:
-    try:
-        from .compatibility import stream_supports_color as compat_stream_supports_color
-        return compat_stream_supports_color(stream)
+        import colorama
+        return True
     except ImportError:
+        return False
+
+def is_tty():
+    return hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()
+
+def has_color_env_var():
+    term = os.environ.get('TERM', '')
+    colorterm = os.environ.get('COLORTERM', '')
+    force_color = os.environ.get('FORCE_COLOR', '')
+    no_color = os.environ.get('NO_COLOR', '')
+    
+    if no_color:
+        return False
+    if force_color:
+        return True
+    if colorterm in ('truecolor', '24bit'):
+        return True
+    if term in ('xterm-256color', 'screen-256color', 'xterm-color', 'cygwin'):
+        return True
+    return False
+
+def is_ide_environment():
+    ide_indicators = [
+        'PYCHARM_HOSTED',
+        'VSCODE_PID',
+        'TERM_PROGRAM',
+        'JPY_PARENT_PID',
+        'COLAB_GPU'
+    ]
+    
+    for indicator in ide_indicators:
+        if os.environ.get(indicator):
+            return True
+    
+    if hasattr(sys, 'ps1'):
+        return True
+    
+    return False
+
+def is_windows_terminal():
+    if not is_windows():
+        return False
+    
+    wt_session = os.environ.get('WT_SESSION')
+    if wt_session:
+        return True
+    
+    term_program = os.environ.get('TERM_PROGRAM', '')
+    if 'WindowsTerminal' in term_program:
+        return True
+    
+    return False
+
+def is_powershell():
+    return 'powershell' in os.environ.get('PSModulePath', '').lower()
+
+def is_cmd():
+    if not is_windows():
+        return False
+    return os.environ.get('PROMPT') is not None
+
+def supports_ansi_colors():
+    if is_windows():
+        if is_windows_terminal() or is_powershell():
+            return True
+        
         try:
-            if not hasattr(stream, 'isatty'):
-                return False
-            
-            if not callable(stream.isatty):
-                return False
-            
-            return stream.isatty()
-        except Exception:
-            return False 
+            import ctypes
+            kernel32 = ctypes.windll.kernel32
+            stdout_handle = kernel32.GetStdHandle(-11)
+            mode = ctypes.c_ulong()
+            kernel32.GetConsoleMode(stdout_handle, ctypes.byref(mode))
+            return bool(mode.value & 0x0004)
+        except:
+            return False
+    
+    return True
+
+def is_terminal_supports_color():
+    if not is_tty() and not is_ide_environment():
+        return False
+    
+    if has_color_env_var():
+        return True
+    
+    if is_ide_environment():
+        return True
+    
+    if supports_ansi_colors():
+        return True
+    
+    return False 

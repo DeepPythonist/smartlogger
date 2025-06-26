@@ -1,32 +1,17 @@
-#!/usr/bin/env python3
-
 import logging
-import smartlogger
-from smartlogger.config.colors import ANSIColors
+from smartlogger.core.formatter import ColorFormatter
+from smartlogger.core.handler import ColorHandler
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
-print("=== Default Colors ===")
-logger.debug("Default debug (blue)")
-logger.info("Default info (green)")
-logger.warning("Default warning (yellow)")
-logger.error("Default error (red)")
-logger.critical("Default critical (bold red)")
+handler = ColorHandler()
+formatter = ColorFormatter('%(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
-print("\n=== Custom Colors ===")
-smartlogger.configure_colors({
-    'DEBUG': ANSIColors.CYAN,
-    'INFO': ANSIColors.BRIGHT_GREEN,
-    'WARNING': ANSIColors.MAGENTA,
-    'ERROR': ANSIColors.BRIGHT_RED,
-    'CRITICAL': ANSIColors.BOLD + ANSIColors.YELLOW + ANSIColors.BG_RED
-})
-
-logger.debug("Custom debug (cyan)")
-logger.info("Custom info (bright green)")
-logger.warning("Custom warning (magenta)")
-logger.error("Custom error (bright red)")
-logger.critical("Custom critical (bold yellow on red background)")
-
-print("\nCustom color configuration completed!") 
+logger.debug("Custom formatted debug message")
+logger.info("Custom formatted info message")
+logger.warning("Custom formatted warning message")
+logger.error("Custom formatted error message")
+logger.critical("Custom formatted critical message") 
