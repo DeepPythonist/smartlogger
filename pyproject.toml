@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pysmartlogger"
-version = "1.2.3"
+version = "1.2.5"
 description = "A cross-platform Python library that adds colorful logging capabilities to the standard logging module"
 readme = "README.md"
 license = {text = "MIT"}
