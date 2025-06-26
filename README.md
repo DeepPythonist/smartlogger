@@ -15,6 +15,16 @@
 
 ## ✨ Why SmartLogger?
 
+<div align="center">
+
+### Transform Your Logs Instantly! 
+
+![SmartLogger Before and After](image.png)
+
+*Just one line of code transforms boring logs into beautiful, colorful masterpieces!*
+
+</div>
+
 **Before SmartLogger:**
 ```python
 2024-01-06 10:30:45 - myapp - DEBUG - Processing user data...
