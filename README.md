@@ -47,7 +47,7 @@ logger.critical("This is a critical message") # Bright Red
 
 ## Compatibility
 
-- **Python**: 3.7+
+- **Python**: 3.8+
 - **Operating Systems**: Windows, macOS, Linux
 - **Terminals**: CMD, PowerShell, bash, zsh, fish
 - **IDEs**: VS Code, PyCharm, Jupyter, and more

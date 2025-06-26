@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Python 3.7 or higher
+- Python 3.8 or higher
 - No external dependencies required
 
 ## Installation from PyPI
@@ -63,7 +63,7 @@ If colors are not displaying:
 
 If you get import errors:
 
-1. Ensure Python version is 3.7+
+1. Ensure Python version is 3.8+
 2. Verify installation with `pip list | grep smartlogger`
 3. Check if you're using the correct Python environment
 
