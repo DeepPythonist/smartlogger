@@ -19,7 +19,7 @@
 
 ### Transform Your Logs Instantly! 
 
-![SmartLogger Before and After](image.png)
+![SmartLogger Before and After](https://raw.githubusercontent.com/DeepPythonist/smartlogger/master/image.png)
 
 *Just one line of code transforms boring logs into beautiful, colorful masterpieces!*
 
