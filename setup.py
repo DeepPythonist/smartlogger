@@ -8,7 +8,7 @@ with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name="pysmartlogger",
-    version="1.2.3",
+    version="1.3.0",
     author="Mohammad Rasol Esfandiari",
     author_email="mrasolesfandiari@gmail.com",
     description="A cross-platform Python library that adds colorful logging capabilities to the standard logging module",

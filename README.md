@@ -60,10 +60,10 @@ Each log level gets its distinctive color:
 
 ### ⚡ **Zero Configuration**
 ```python
-# That's it! Just one import
-import smartlogger.auto
+import logging
+import smartlogger.auto  # ← Right after logging!
 ```
-No setup, no configuration files, no complex initialization. It just works!
+No setup, no configuration files, no complex initialization. Just remember the import order!
 
 </td>
 </tr>
@@ -125,23 +125,64 @@ pip install .
 
 ### 30-Second Setup
 
+> ⚠️ **IMPORTANT: Import Order Matters!**  
+> `smartlogger.auto` must be imported **immediately after** importing `logging` and **before** any logging configuration or usage.
+
 ```python
-# 1. Your existing logging code
+# 1. Import logging first
 import logging
 
+# 2. Import SmartLogger IMMEDIATELY after logging (THIS IS CRITICAL!)
+import smartlogger.auto
+
+# 3. Now configure your logging (BasicConfig, handlers, etc.)
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# 2. Add this ONE line - that's it!
-import smartlogger.auto
-
-# 3. Your logs are now colorful! 🎨
+# 4. Your logs are now colorful! 🎨
 logger.debug("🔍 Debug: Investigating user behavior")
 logger.info("✅ Info: User login successful")
 logger.warning("⚠️ Warning: API rate limit at 80%")
 logger.error("❌ Error: Payment processing failed")
 logger.critical("🚨 Critical: Database connection lost!")
 ```
+
+<div align="center">
+
+### ✅ Correct Import Order vs ❌ Wrong Import Order
+
+</div>
+
+<table>
+<tr>
+<td width="50%" align="center">
+
+### ✅ **CORRECT** 
+```python
+import logging
+import smartlogger.auto  # ← Right after logging!
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+logger.info("✅ Colors work!")
+```
+
+</td>
+<td width="50%" align="center">
+
+### ❌ **WRONG**
+```python
+import logging
+logging.basicConfig()  # ← Configuration before SmartLogger
+import smartlogger.auto  # ← Too late!
+
+logger = logging.getLogger(__name__)
+logger.info("❌ No colors...")
+```
+
+</td>
+</tr>
+</table>
 
 ### Advanced Usage
 
@@ -175,10 +216,11 @@ logger.info("🎨 Custom formatting with colors!")
 <summary>🏢 <strong>Enterprise Integration</strong></summary>
 
 ```python
+# ⚠️ Remember: Import order is critical!
 import logging
-import smartlogger.auto
+import smartlogger.auto  # ← Must be imported before any logging configuration!
 
-# Existing enterprise logging setup
+# Now configure your existing enterprise logging setup
 LOGGING_CONFIG = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -233,7 +275,7 @@ logger.info("🏢 Enterprise logging is now colorful!")
 
 ```python
 import logging
-import smartlogger.auto
+import smartlogger.auto  # ← Immediately after logging import!
 from flask import Flask
 
 app = Flask(__name__)
@@ -262,7 +304,7 @@ def get_user(user_id):
 
 ```python
 import logging
-import smartlogger.auto
+import smartlogger.auto  # ← Import right after logging!
 
 logger = logging.getLogger('ml_pipeline')
 
@@ -298,7 +340,7 @@ def train_model(dataset_path):
 
 ```python
 import logging
-import smartlogger.auto
+import smartlogger.auto  # ← Critical: Import immediately after logging!
 import pandas as pd
 
 logger = logging.getLogger('data_processor')
@@ -394,8 +436,9 @@ def process_customer_data(file_path):
 </div>
 
 ```python
-import smartlogger.auto
-# This single import triggers the magic! 🪄
+import logging
+import smartlogger.auto  # ← This triggers the magic! 🪄
+# IMPORTANT: Must be imported right after logging and before any configuration!
 ```
 
 <details>
@@ -508,7 +551,98 @@ We love contributions! SmartLogger is an open-source project and we welcome cont
 
 </details>
 
+## ⚠️ Common Mistakes
+
+<div align="center">
+
+### 🚫 Avoid These Import Order Mistakes!
+
+</div>
+
+<table>
+<tr>
+<td width="50%" align="center">
+
+### ❌ **MISTAKE 1: Late Import**
+```python
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Too late! SmartLogger can't patch existing config
+import smartlogger.auto  
+```
+**Result:** No colors, plain text logging
+
+</td>
+<td width="50%" align="center">
+
+### ❌ **MISTAKE 2: Missing logging import**
+```python
+# Missing: import logging
+import smartlogger.auto
+
+logging.basicConfig(level=logging.INFO)  
+logger = logging.getLogger(__name__)
+```
+**Result:** Import error or unexpected behavior
+
+</td>
+</tr>
+<tr>
+<td align="center">
+
+### ❌ **MISTAKE 3: Config Before Import**
+```python
+import logging
+
+# Configuration happens first
+logging.getLogger().setLevel(logging.DEBUG)
+logging.getLogger().addHandler(handler)
+
+import smartlogger.auto  # Too late!
+```
+**Result:** SmartLogger can't enhance existing loggers
+
+</td>
+<td align="center">
+
+### ✅ **CORRECT WAY**
+```python
+import logging
+import smartlogger.auto  # Perfect timing!
+
+# All configuration after SmartLogger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.info("🎨 Beautiful colors!")
+```
+**Result:** Beautiful, colorful logs! 
+
+</td>
+</tr>
+</table>
+
 ## ❓ FAQ
+
+<details>
+<summary><strong>Q: Why is import order important?</strong></summary>
+
+**A:** SmartLogger uses monkey-patching to enhance Python's logging module. It must be imported **immediately after** `logging` and **before** any logging configuration to work properly:
+
+```python
+# ✅ CORRECT ORDER
+import logging
+import smartlogger.auto  # ← Must be here!
+logging.basicConfig()   # ← Configuration after SmartLogger
+
+# ❌ WRONG ORDER  
+import logging
+logging.basicConfig()   # ← Configuration before SmartLogger
+import smartlogger.auto  # ← Too late! Colors won't work
+```
+
+</details>
 
 <details>
 <summary><strong>Q: Does SmartLogger affect performance?</strong></summary>

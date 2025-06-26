@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-01-06
+
+### Added
+- **Critical Import Order Documentation**: Added comprehensive warning sections about proper import order
+- **Common Mistakes Section**: Added detailed examples of import order mistakes and their solutions
+- **Import Order FAQ**: Added specific FAQ entry explaining why import order matters
+- **Visual Comparison Tables**: Added correct vs incorrect import order examples throughout README
+- **Enhanced Examples**: Updated all code examples to emphasize proper import timing
+
+### Improved
+- **README Documentation**: Significantly enhanced README with better explanations and warnings
+- **User Experience**: Clearer guidance prevents common user errors with import order
+- **Code Examples**: All examples now clearly show proper `import logging` → `import smartlogger.auto` sequence
+
+### Changed
+- Updated all code examples to emphasize import order importance
+- Enhanced Zero Configuration section with import order reminder
+- Improved Enterprise Integration examples with proper import timing
+- Better formatted warning boxes and emphasis throughout documentation
+
 ## [1.2.0] - 2025-01-06
 
 ### Added
