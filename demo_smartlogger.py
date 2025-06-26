@@ -1,10 +1,24 @@
 #!/usr/bin/env python3
 """
-SmartLogger Demo - نمایش قابلیت‌های رنگی سیستم لاگ
+SmartLogger Complete Demo - تست جامع قابلیت‌های رنگی
 """
 
 import time
 import logging
+import os
+import sys
+
+print("🔍 SmartLogger Environment Check:")
+print(f"Terminal supports colors: {sys.stdout.isatty()}")
+print(f"Platform: {sys.platform}")
+print(f"TERM: {os.environ.get('TERM', 'Not set')}")
+
+# تست رنگ ANSI مستقیم
+print("\n🎨 Direct ANSI Color Test:")
+print(f"\033[31mRed\033[0m \033[32mGreen\033[0m \033[33mYellow\033[0m \033[34mBlue\033[0m")
+
+# فعال کردن force color برای اطمینان
+os.environ['FORCE_COLOR'] = '1'
 
 # فعالسازی SmartLogger
 import smartlogger.auto
@@ -146,11 +160,42 @@ def demo_error_scenarios():
         getattr(error_logger, level)(f"{level.upper()}: {message}")
         time.sleep(0.5)
 
+def demo_force_color_test():
+    """تست با force color برای محیط‌های مختلف"""
+    print("\n🔧 === Demo: Force Color Test ===")
+    
+    from smartlogger import ColoredStreamHandler, ColoredFormatter
+    
+    # ایجاد handler با force color
+    handler = ColoredStreamHandler(sys.stdout, force_color=True)
+    formatter = ColoredFormatter('%(levelname)s: %(message)s')
+    handler.setFormatter(formatter)
+    
+    force_logger = logging.getLogger('ForceColor')
+    force_logger.handlers.clear()
+    force_logger.addHandler(handler)
+    force_logger.setLevel(logging.DEBUG)
+    
+    force_logger.debug("Force DEBUG (should be blue)")
+    force_logger.info("Force INFO (should be green)")
+    force_logger.warning("Force WARNING (should be yellow)")
+    force_logger.error("Force ERROR (should be red)")
+    force_logger.critical("Force CRITICAL (should be bold red)")
+
 def main():
     """اجرای تمام demo ها"""
-    print("🎯 SmartLogger Demonstration")
+    print("\n🎯 SmartLogger Complete Demonstration")
     print("=" * 50)
-    print("نمایش قابلیت‌های رنگی سیستم لاگ پایتون")
+    
+    # بررسی وضعیت SmartLogger
+    try:
+        from smartlogger.auto import is_active
+        from smartlogger.utils.terminal import supports_colors
+        print(f"SmartLogger Active: {is_active()}")
+        print(f"Color Support: {supports_colors()}")
+    except Exception as e:
+        print(f"SmartLogger Status Error: {e}")
+    
     print("=" * 50)
     
     # اجرای تمام demo ها
@@ -159,15 +204,15 @@ def main():
     demo_custom_colors()
     demo_multiple_loggers()
     demo_error_scenarios()
+    demo_force_color_test()
     
     print("\n✅ === Demo Completed ===")
-    print("تمام قابلیت‌های SmartLogger نمایش داده شد!")
-    print("رنگ‌ها بر اساس سطح لاگ تنظیم شده‌اند:")
-    print("🔵 DEBUG (آبی)")
-    print("🟢 INFO (سبز)")  
-    print("🟡 WARNING (زرد)")
-    print("🔴 ERROR (قرمز)")
-    print("🟥 CRITICAL (قرمز Bold)")
+    print("🎨 If you see colors above, SmartLogger is working!")
+    print("🔧 If you don't see colors:")
+    print("   • Try running in Terminal.app (not VSCode)")
+    print("   • Use iTerm2 on macOS")
+    print("   • Check terminal ANSI color support")
+    print("   • Set FORCE_COLOR=1 environment variable")
 
 if __name__ == "__main__":
     main() 
