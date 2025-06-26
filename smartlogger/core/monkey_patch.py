@@ -105,7 +105,7 @@ class LoggingPatcher:
             logging._original_basicConfig = logging.basicConfig
             logging.basicConfig = self._enhanced_basic_config
     
-    def _enhanced_add_handler(self, logger_self, handler):
+    def _enhanced_add_handler(logger_self, handler):
         if isinstance(handler, logging.StreamHandler) and not isinstance(handler, ColoredStreamHandler):
             if hasattr(handler, 'stream') and hasattr(handler.stream, 'isatty'):
                 try:

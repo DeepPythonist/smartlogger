@@ -153,4 +153,21 @@ def get_color_depth() -> int:
     try:
         return get_terminal_capabilities().get_color_depth()
     except Exception:
-        return 1 
+        return 1
+
+
+def stream_supports_color(stream) -> bool:
+    try:
+        from .compatibility import stream_supports_color as compat_stream_supports_color
+        return compat_stream_supports_color(stream)
+    except ImportError:
+        try:
+            if not hasattr(stream, 'isatty'):
+                return False
+            
+            if not callable(stream.isatty):
+                return False
+            
+            return stream.isatty()
+        except Exception:
+            return False 
